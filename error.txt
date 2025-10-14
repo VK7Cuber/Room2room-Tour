@@ -1,0 +1,97 @@
+ProgrammingError
+sqlalchemy.exc.ProgrammingError: (psycopg.errors.UndefinedTable) отношение "users" не существует
+LINE 2: FROM users 
+             ^
+[SQL: SELECT users.id, users.username, users.email, users.password_hash, users.first_name, users.last_name, users.phone, users.city, users.avatar, users.description, users.registration_date, users.is_verified, users.is_active, users.rating, users.review_count 
+FROM users 
+WHERE users.email = %(email_1)s::VARCHAR OR users.username = %(username_1)s::VARCHAR]
+[parameters: {'email_1': 'vk7cuber@yandex.ru', 'username_1': 'VK7Cuber'}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+Traceback (most recent call last)
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+self.dialect.do_execute(
+^Open an interactive python shell in this frame
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+cursor.execute(statement, parameters)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\psycopg\cursor.py", line 97, in execute
+raise ex.with_traceback(None)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The above exception was the direct cause of the following exception:
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\flask\app.py", line 2213, in __call__
+return self.wsgi_app(environ, start_response)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\flask\app.py", line 2193, in wsgi_app
+response = self.handle_exception(e)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\flask\app.py", line 2190, in wsgi_app
+response = self.full_dispatch_request()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\flask\app.py", line 1486, in full_dispatch_request
+rv = self.handle_user_exception(e)
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\flask\app.py", line 1484, in full_dispatch_request
+rv = self.dispatch_request()
+     ^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\flask\app.py", line 1469, in dispatch_request
+return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Projects\Room2room-Tour\app\routes\auth.py", line 39, in register
+exists = db.session.execute(
+         
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\sqlalchemy\orm\scoping.py", line 778, in execute
+return self._proxied.execute(
+       
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2362, in execute
+return self._execute_internal(
+       
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2247, in _execute_internal
+result: Result[Any] = compile_state_cls.orm_execute_statement(
+                      
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\sqlalchemy\orm\context.py", line 293, in orm_execute_statement
+result = conn.execute(
+         
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
+return meth(
+       
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
+return connection._execute_clauseelement(
+       
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
+ret = self._execute_context(
+      
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+return self._exec_single_context(
+       
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+self._handle_dbapi_exception(
+^
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+self.dialect.do_execute(
+^
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+cursor.execute(statement, parameters)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Projects\Room2room-Tour\.venv\Lib\site-packages\psycopg\cursor.py", line 97, in execute
+raise ex.with_traceback(None)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg.errors.UndefinedTable) отношение "users" не существует
+LINE 2: FROM users
+^
+[SQL: SELECT users.id, users.username, users.email, users.password_hash, users.first_name, users.last_name, users.phone, users.city, users.avatar, users.description, users.registration_date, users.is_verified, users.is_active, users.rating, users.review_count
+FROM users
+WHERE users.email = %(email_1)s::VARCHAR OR users.username = %(username_1)s::VARCHAR]
+[parameters: {'email_1': 'vk7cuber@yandex.ru', 'username_1': 'VK7Cuber'}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+The debugger caught an exception in your WSGI application. You can now look at the traceback which led to the error.
+To switch between the interactive traceback and the plaintext one, you can click on the "Traceback" headline. From the text traceback you can also create a paste of it. For code execution mouse-over the frame you want to debug and click on the console icon on the right side.
+
+You can execute arbitrary Python code in the stack frames and there are some extra helpers available for introspection:
+
+dump() shows all variables in the frame
+dump(obj) dumps all that's known about the object
+Brought to you by DON'T PANIC, your friendly Werkzeug powered traceback interpreter.
