@@ -49,7 +49,10 @@ def chat(user_id: int):
         flash("Пользователь не найден", "warning")
         return redirect(url_for("messages.inbox"))
 
-    if request.method == "POST":
+    # read-only chat if platform bot
+    is_read_only = bool(getattr(peer, "email", None) == "system@room2room.local")
+
+    if request.method == "POST" and not is_read_only:
         content = (request.form.get("content") or "").strip()
         exchange_id = request.form.get("exchange_id")
         if not content:
@@ -84,7 +87,7 @@ def chat(user_id: int):
         .order_by(Message.timestamp.asc())
     ).scalars().all()
 
-    return render_template("messages/chat.html", peer=peer, messages=msgs)
+    return render_template("messages/chat.html", peer=peer, messages=msgs, is_read_only=is_read_only)
 
 
 @messages_bp.post("/start/<int:listing_id>")

@@ -4,6 +4,9 @@ from sqlalchemy import select, and_, or_
 
 from app import db
 from app.models.housing_exchange import HousingExchange
+from app.models.booking import Booking
+from app.models import Message, User
+from app.utils.helpers import get_or_create_platform_user
 from app.forms.exchange import ListingForm, FilterForm
 
 
@@ -46,6 +49,60 @@ def new_listing():
         flash("Объявление создано", "success")
         return redirect(url_for("exchange.my_listings"))
     return render_template("exchange/new.html", form=form)
+
+
+@exchange_bp.route("/edit/<int:listing_id>", methods=["GET", "POST"])
+@login_required
+def edit_listing(listing_id: int):
+    listing = db.session.get(HousingExchange, listing_id)
+    if not listing or listing.owner_id != current_user.id:
+        flash("Объявление не найдено", "warning")
+        return redirect(url_for("exchange.my_listings"))
+    from app.forms.exchange import ListingForm
+    form = ListingForm(obj=listing)
+    # Pre-populate comma-separated strings for list fields
+    if request.method == "GET":
+        form.amenities.data = ", ".join(listing.amenities or [])
+        form.photos.data = ", ".join(listing.photos or [])
+    if form.validate_on_submit():
+        listing.title = form.title.data.strip()
+        listing.description = form.description.data.strip() if form.description.data else None
+        listing.city = form.city.data.strip() if form.city.data else None
+        listing.address = form.address.data.strip() if form.address.data else None
+        listing.housing_type = form.housing_type.data or None
+        listing.room_count = form.room_count.data
+        listing.available_from = form.available_from.data
+        listing.available_to = form.available_to.data
+        amenities_raw = form.amenities.data
+        photos_raw = form.photos.data
+        if isinstance(amenities_raw, (list, tuple)):
+            listing.amenities = [s.strip() for s in amenities_raw if isinstance(s, str) and s.strip()]
+        else:
+            listing.amenities = [s.strip() for s in str(amenities_raw or "").split(",") if s.strip()]
+        if isinstance(photos_raw, (list, tuple)):
+            listing.photos = [s.strip() for s in photos_raw if isinstance(s, str) and s.strip()]
+        else:
+            listing.photos = [s.strip() for s in str(photos_raw or "").split(",") if s.strip()]
+        db.session.commit()
+        flash("Объявление обновлено", "success")
+        return redirect(url_for("exchange.my_listings"))
+    return render_template("exchange/edit.html", form=form, listing=listing)
+
+
+@exchange_bp.post("/delete/<int:listing_id>")
+@login_required
+def delete_listing(listing_id: int):
+    listing = db.session.get(HousingExchange, listing_id)
+    if not listing or listing.owner_id != current_user.id:
+        flash("Объявление не найдено", "warning")
+        return redirect(url_for("exchange.my_listings"))
+
+    # уведомить всех клиентов, у кого есть брони этого объявления (для обмена жилья броней пока нет — placeholder)
+    # В случае туров уведомляем клиентов там, здесь просто удаляем
+    db.session.delete(listing)
+    db.session.commit()
+    flash("Объявление удалено", "info")
+    return redirect(url_for("exchange.my_listings"))
 
 
 @exchange_bp.route("/")

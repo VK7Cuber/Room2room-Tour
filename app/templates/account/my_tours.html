@@ -14,19 +14,18 @@
   <div class="row g-4">
     {% for t in tours %}
       <div class="col-12 col-md-6 col-lg-4">
-        <a href="{{ url_for('tourism.tourism_detail', tour_id=t.id) }}" class="text-decoration-none">
-          <div class="card listing-card h-100 shadow-sm">
+        <div class="card listing-card h-100 shadow-sm">
             <div class="ratio ratio-4x3 listing-thumb">
               {% set photo = (t.photos[0] if t.photos and t.photos|length > 0 else url_for('static', filename='images/hero-mountains.png')) %}
               <img src="{{ photo }}" alt="" class="img-cover">
             </div>
             <div class="card-body">
               <div class="small text-muted mb-1">{{ t.city or 'Город' }}</div>
-              <h2 class="h6 mb-1 text-dark">{{ t.title }}</h2>
+              <a href="{{ url_for('tourism.tourism_detail', tour_id=t.id) }}" class="stretched-link text-decoration-none"><h2 class="h6 mb-1 text-dark">{{ t.title }}</h2></a>
               <div class="small text-muted">{{ t.price_per_hour }} ₽/час · {{ t.duration_hours }} ч</div>
             </div>
-          </div>
-        </a>
+        </div>
+        
       </div>
     {% endfor %}
   </div>

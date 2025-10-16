@@ -34,13 +34,15 @@
           {% endfor %}
         {% endif %}
       </div>
-      <div class="card-footer bg-white">
-        <form method="post" class="d-flex gap-2">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <input type="text" name="content" class="form-control" placeholder="Напишите сообщение..." autocomplete="off" />
-          <button class="btn btn-accent" type="submit">Отправить</button>
-        </form>
-      </div>
+      {% if not is_read_only %}
+        <div class="card-footer bg-white">
+          <form method="post" class="d-flex gap-2">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="text" name="content" class="form-control" placeholder="Напишите сообщение..." autocomplete="off" />
+            <button class="btn btn-accent" type="submit">Отправить</button>
+          </form>
+        </div>
+      {% endif %}
     </div>
   </div>
 </div>

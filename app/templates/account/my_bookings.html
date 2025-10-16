@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои бронирования — Room2room Tour{% endblock %}
+
+{% block content %}
+<h1 class="h5 mb-3">Мои бронирования</h1>
+
+{% if not bookings %}
+  <div class="text-muted">Пока нет бронирований.</div>
+{% else %}
+  <div class="list-group shadow-sm">
+    {% for b in bookings %}
+      <div class="list-group-item">
+        <div class="d-flex justify-content-between">
+          <div>
+            <div class="fw-semibold">Статус: {{ b.status }}</div>
+            <div class="small text-muted">{{ b.start_date }} — {{ b.end_date }}</div>
+          </div>
+          <div class="text-end">
+            <div class="fw-semibold">{{ b.total_price }} ₽</div>
+            {% if b.tourism_id %}
+              <div class="small"><a href="{{ url_for('tourism.tourism_detail', tour_id=b.tourism_id) }}">К экскурсии</a></div>
+            {% elif b.exchange_id %}
+              <div class="small"><a href="{{ url_for('exchange.listing_detail', listing_id=b.exchange_id) }}">К объявлению</a></div>
+            {% endif %}
+            <div class="mt-2">
+              <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelBooking{{ b.id }}">Отменить бронь</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Cancel modal -->
+      <div class="modal fade" id="cancelBooking{{ b.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Отмена брони</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{{ url_for('bookings.cancel_booking', booking_id=b.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <div class="modal-body">
+                Вы уверены, что хотите отменить бронь?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Нет</button>
+                <button type="submit" class="btn btn-danger">Отменить</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}
+
+

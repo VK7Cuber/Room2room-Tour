@@ -6,6 +6,8 @@ from flask_mail import Mail
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
 import os
+import re
+from markupsafe import Markup
 
 
 db = SQLAlchemy()
@@ -40,8 +42,10 @@ def create_app() -> Flask:
     app.register_blueprint(exchange_bp)
     app.register_blueprint(messages_bp)
     from .routes.reviews import reviews_bp
+    from .routes.bookings import bookings_bp
     app.register_blueprint(tourism_bp)
     app.register_blueprint(reviews_bp)
+    app.register_blueprint(bookings_bp)
 
     login_manager.login_view = "auth.login"
     login_manager.login_message_category = "warning"
@@ -66,6 +70,17 @@ def create_app() -> Flask:
         except Exception:
             # avoid breaking requests if DB is not reachable for some reason
             pass
+
+    # Jinja filter: linkify urls (used for platform notifications)
+    _url_re = re.compile(r"(https?://[\w\-./?=&%#:+]+)")
+
+    def linkify(text: str) -> Markup:
+        if not text:
+            return Markup("")
+        escaped = Markup.escape(text)
+        return Markup(_url_re.sub(r'<a href="\1" target="_blank" rel="noopener">\1</a>', str(escaped)))
+
+    app.jinja_env.filters["linkify"] = linkify
 
     return app
 

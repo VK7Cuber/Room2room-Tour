@@ -43,7 +43,11 @@
           <span class="badge text-bg-light">{{ tour.duration_hours }} ч</span>
         </div>
         {% if tour.description %}
-          <p class="mb-0">{{ tour.description }}</p>
+          <p class="mb-3">{{ tour.description }}</p>
+        {% endif %}
+
+        {% if current_user.is_authenticated and current_user.id != tour.guide_id %}
+          <a class="btn btn-accent" href="{{ url_for('tourism.tourism_book', tour_id=tour.id) }}">Забронировать</a>
         {% endif %}
       </div>
     </div>
@@ -98,19 +102,26 @@
             </div>
           </div>
         {% elif current_user.is_authenticated and current_user.id == tour.guide_id %}
-          <hr>
-          <form method="post" action="{{ url_for('reviews.create_user_review', reviewed_id=tour.guide_id) }}" class="mt-2">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <div class="mb-2">
-              <label class="form-label small">Оценка (1-5)</label>
-              <input type="number" name="rating" class="form-control" min="1" max="5">
+          <div class="d-flex gap-2">
+            <a href="{{ url_for('tourism.tourism_edit', tour_id=tour.id) }}" class="btn btn-sm btn-warning" title="Редактировать"><i class="fa fa-pencil"></i></a>
+            <button class="btn btn-sm btn-danger" title="Удалить" data-bs-toggle="modal" data-bs-target="#delTour{{ tour.id }}"><i class="fa fa-trash"></i></button>
+          </div>
+          <!-- Modal delete tour -->
+          <div class="modal fade" id="delTour{{ tour.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title">Удаление предложения</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                <form method="post" action="{{ url_for('tourism.tourism_delete', tour_id=tour.id) }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <div class="modal-body">Вы уверены, что хотите удалить объявление?</div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                  </div>
+                </form>
+              </div>
             </div>
-            <div class="mb-2">
-              <label class="form-label small">Комментарий</label>
-              <textarea name="comment" class="form-control" rows="3"></textarea>
-            </div>
-            <button class="btn btn-outline-secondary w-100" type="submit">Оставить отзыв о себе (демо)</button>
-          </form>
+          </div>
         {% endif %}
       </div>
     </div>

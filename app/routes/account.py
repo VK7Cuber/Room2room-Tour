@@ -4,6 +4,7 @@ from flask_login import login_required, current_user
 from app import db
 from app.forms.account import ProfileForm
 from app.models.remote_tourism import RemoteTourism
+from app.models.booking import Booking
 
 
 account_bp = Blueprint("account", __name__, url_prefix="/account")
@@ -48,5 +49,16 @@ def my_tours():
         ).scalars().all()
     )
     return render_template("account/my_tours.html", tours=tours)
+
+
+@account_bp.get("/bookings")
+@login_required
+def my_bookings():
+    bookings = (
+        db.session.execute(
+            db.select(Booking).where(Booking.user_id == current_user.id).order_by(Booking.created_date.desc())
+        ).scalars().all()
+    )
+    return render_template("account/my_bookings.html", bookings=bookings)
 
 

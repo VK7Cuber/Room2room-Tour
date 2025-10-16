@@ -38,9 +38,12 @@
       <div class="card-body">
         <h1 class="h4 mb-1">{{ listing.title }}</h1>
         <div class="small text-muted mb-3">{{ listing.city }}{% if listing.address %}, {{ listing.address }}{% endif %}</div>
-        <div class="mb-3">
+        <div class="mb-3 d-flex align-items-center justify-content-between">
           <span class="badge text-bg-light me-2">{{ listing.housing_type or 'Тип' }}</span>
           <span class="badge text-bg-light">{{ listing.room_count or 0 }} комн.</span>
+          <span class="ms-auto">
+            <a target="_blank" rel="noopener" class="small text-decoration-none" href="https://yandex.ru/maps/?text={{ (listing.city or '') | urlencode }} {{ (listing.address or '') | urlencode }}">Открыть в Яндекс.Картах</a>
+          </span>
         </div>
         {% if listing.amenities and listing.amenities|length %}
           <h2 class="h6">Удобства</h2>
@@ -109,6 +112,26 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button class="btn btn-accent w-100" type="submit">Написать владельцу</button>
           </form>
+        {% else %}
+          <div class="d-flex gap-2 mb-3">
+            <a href="{{ url_for('exchange.edit_listing', listing_id=listing.id) }}" class="btn btn-sm btn-warning" title="Редактировать"><i class="fa fa-pencil"></i></a>
+            <button class="btn btn-sm btn-danger" title="Удалить" data-bs-toggle="modal" data-bs-target="#delListing{{ listing.id }}"><i class="fa fa-trash"></i></button>
+          </div>
+          <div class="modal fade" id="delListing{{ listing.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title">Удаление объявления</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                <form method="post" action="{{ url_for('exchange.delete_listing', listing_id=listing.id) }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <div class="modal-body">Вы уверены, что хотите удалить объявление?</div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
         {% endif %}
         {% if listing.available_from or listing.available_to %}
           <div class="small text-muted">Доступно: {{ listing.available_from or 'с' }} — {{ listing.available_to or 'по' }}</div>
