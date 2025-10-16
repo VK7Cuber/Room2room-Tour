@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Личный кабинет — Room2room Tour{% endblock %}
+
+{% block content %}
+<div class="row g-4 align-items-stretch">
+  <div class="col-12 col-lg-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body d-flex align-items-center">
+        <img src="{{ current_user.avatar or url_for('static', filename='images/avatar-placeholder.png') }}" class="rounded-circle me-3" width="64" height="64" alt="avatar">
+        <div>
+          <div class="fw-semibold">{{ current_user.username }}</div>
+          <div class="small text-muted">{{ current_user.city or 'Город не указан' }}</div>
+          <a class="small" href="{{ url_for('account.profile') }}">Редактировать профиль</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-8">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Статистика</h2>
+        <div class="row g-3">
+          <div class="col-6 col-md-3">
+            <div class="stat-tile">
+              <div class="stat-num">{{ stats.listings }}</div>
+              <div class="stat-label">Мои объявления</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-tile">
+              <div class="stat-num">{{ stats.bookings }}</div>
+              <div class="stat-label">Бронирования</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-tile">
+              <div class="stat-num">{{ stats.reviews }}</div>
+              <div class="stat-label">Отзывы</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-tile">
+              <div class="stat-num">{{ stats.messages }}</div>
+              <div class="stat-label">Сообщения</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-4 shadow-sm">
+  <div class="card-body">
+    <h2 class="h5 mb-3">Быстрые действия</h2>
+    <div class="d-flex flex-wrap gap-2">
+      <a href="{{ url_for('exchange.new_listing') }}" class="btn btn-accent">Создать объявление</a>
+      <a href="{{ url_for('exchange.my_listings') }}" class="btn btn-outline-secondary">Мои объявления</a>
+      <a href="{{ url_for('account.my_tours') }}" class="btn btn-outline-secondary">Мои туры</a>
+      <a href="{{ url_for('messages.inbox') }}" class="btn btn-outline-secondary">Мои сообщения</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

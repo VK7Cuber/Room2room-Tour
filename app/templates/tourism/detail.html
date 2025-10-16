@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ tour.title }} — Room2room Tour{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div id="tourCarousel" class="carousel slide">
+        <div class="carousel-inner">
+          {% if tour.photos and tour.photos|length %}
+            {% for p in tour.photos %}
+              <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <div class="ratio ratio-16x9">
+                  <img src="{{ p }}" class="img-cover rounded-top" alt="Фото {{ loop.index }}">
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="carousel-item active">
+              <div class="ratio ratio-16x9">
+                <img src="{{ url_for('static', filename='images/hero-mountains.png') }}" class="img-cover rounded-top" alt="">
+              </div>
+            </div>
+          {% endif %}
+        </div>
+        {% if tour.photos and tour.photos|length > 1 %}
+          <button class="carousel-control-prev" type="button" data-bs-target="#tourCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#tourCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <h1 class="h4 mb-1">{{ tour.title }}</h1>
+        <div class="small text-muted mb-3">{{ tour.city or 'Город' }}</div>
+        <div class="mb-3">
+          <span class="badge text-bg-light me-2">{{ tour.price_per_hour }} ₽/час</span>
+          <span class="badge text-bg-light">{{ tour.duration_hours }} ч</span>
+        </div>
+        {% if tour.description %}
+          <p class="mb-0">{{ tour.description }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3">
+          <img src="{{ tour.guide.avatar or url_for('static', filename='images/avatar-placeholder.svg') }}" class="rounded-circle avatar-nav me-2" alt="">
+          <div>
+            <div class="fw-semibold">{{ tour.guide.username }}</div>
+            <div class="small text-muted">Рейтинг: {{ tour.guide.rating or 0 }} ({{ tour.guide.review_count or 0 }})</div>
+          </div>
+        </div>
+        {% if tour.available_from or tour.available_to %}
+          <h2 class="h6">Доступность</h2>
+          <div class="small text-muted mb-2">{{ tour.available_from or 'с' }} — {{ tour.available_to or 'по' }}</div>
+        {% endif %}
+        {% if current_user.is_authenticated and current_user.id != tour.guide_id %}
+          <form method="post" action="{{ url_for('tourism.start_from_tour', tour_id=tour.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-accent w-100" type="submit">Написать гиду</button>
+          </form>
+          <hr>
+          <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#reviewModalTour">Оставить отзыв о гиде</button>
+          <!-- Modal review for tour guide -->
+          <div class="modal fade" id="reviewModalTour" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Отзыв о гиде</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="{{ url_for('reviews.create_tour_review', tour_id=tour.id) }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <div class="modal-body">
+                    <div class="mb-3">
+                      <label class="form-label">Оценка</label>
+                      <input type="number" name="rating" min="1" max="5" class="form-control" required>
+                    </div>
+                    <div class="mb-0">
+                      <label class="form-label">Комментарий</label>
+                      <textarea name="comment" class="form-control" rows="4"></textarea>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-accent">Отправить</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        {% elif current_user.is_authenticated and current_user.id == tour.guide_id %}
+          <hr>
+          <form method="post" action="{{ url_for('reviews.create_user_review', reviewed_id=tour.guide_id) }}" class="mt-2">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="mb-2">
+              <label class="form-label small">Оценка (1-5)</label>
+              <input type="number" name="rating" class="form-control" min="1" max="5">
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Комментарий</label>
+              <textarea name="comment" class="form-control" rows="3"></textarea>
+            </div>
+            <button class="btn btn-outline-secondary w-100" type="submit">Оставить отзыв о себе (демо)</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль — Room2room Tour{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h5 mb-3">Редактирование профиля</h1>
+        <form method="post" novalidate>
+          {{ form.hidden_tag() }}
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">{{ form.first_name.label }}</label>
+              {{ form.first_name(class_='form-control') }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ form.last_name.label }}</label>
+              {{ form.last_name(class_='form-control') }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ form.city.label }}</label>
+              {{ form.city(class_='form-control') }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ form.phone.label }}</label>
+              {{ form.phone(class_='form-control') }}
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{ form.avatar.label }}</label>
+              {{ form.avatar(class_='form-control') }}
+              <div class="form-text">Укажите ссылку на изображение (PNG/JPG), будет показано в кабинете.</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{ form.description.label }}</label>
+              {{ form.description(class_='form-control', rows=5) }}
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <a href="{{ url_for('exchange.my_listings') }}" class="btn btn-outline-secondary">Мои объявления</a>
+            <a href="{{ url_for('exchange.new_listing') }}" class="btn btn-accent">Создать объявление</a>
+            <a href="{{ url_for('account.dashboard') }}" class="btn btn-outline-secondary">Отмена</a>
+            <button type="submit" class="btn btn-accent">Сохранить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

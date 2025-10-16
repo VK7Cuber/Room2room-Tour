@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Сообщения — Room2room Tour{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h5 mb-0">Сообщения</h1>
+  </div>
+
+{% if not peers %}
+  <div class="text-muted">Пока нет диалогов.</div>
+{% else %}
+  <div class="list-group shadow-sm">
+    {% for u in peers %}
+      <a href="{{ url_for('messages.chat', user_id=u.id) }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+          <img src="{{ u.avatar or url_for('static', filename='images/avatar-placeholder.svg') }}" class="rounded-circle avatar-nav" alt="">
+          <div class="fw-semibold">{{ u.username }}</div>
+        </div>
+        {% set count = unread_map.get(u.id) %}
+        {% if count %}<span class="badge text-bg-danger">{{ count }}</span>{% endif %}
+      </a>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}
+
+

@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ listing.title }} — Room2room Tour{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div id="listingCarousel" class="carousel slide">
+        <div class="carousel-inner">
+          {% if listing.photos and listing.photos|length %}
+            {% for p in listing.photos %}
+              <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <div class="ratio ratio-16x9">
+                  <img src="{{ p }}" class="img-cover rounded-top" alt="Фото {{ loop.index }}">
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="carousel-item active">
+              <div class="ratio ratio-16x9">
+                <img src="{{ url_for('static', filename='images/hero-mountains.png') }}" class="img-cover rounded-top" alt="">
+              </div>
+            </div>
+          {% endif %}
+        </div>
+        {% if listing.photos and listing.photos|length > 1 %}
+          <button class="carousel-control-prev" type="button" data-bs-target="#listingCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#listingCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <h1 class="h4 mb-1">{{ listing.title }}</h1>
+        <div class="small text-muted mb-3">{{ listing.city }}{% if listing.address %}, {{ listing.address }}{% endif %}</div>
+        <div class="mb-3">
+          <span class="badge text-bg-light me-2">{{ listing.housing_type or 'Тип' }}</span>
+          <span class="badge text-bg-light">{{ listing.room_count or 0 }} комн.</span>
+        </div>
+        {% if listing.amenities and listing.amenities|length %}
+          <h2 class="h6">Удобства</h2>
+          <ul class="small text-muted mb-3">
+            {% for a in listing.amenities %}<li>{{ a }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+        {% if listing.description %}
+          <p class="mb-3">{{ listing.description }}</p>
+        {% endif %}
+
+        <hr>
+        <h2 class="h6 mb-3">Отзывы о владельце</h2>
+        <div class="mb-3">
+          {% set stars = listing.owner.rating|int %}
+          <span class="text-warning">{% for _ in range(stars) %}★{% endfor %}</span>
+          <span class="text-muted">({{ listing.owner.review_count or 0 }})</span>
+        </div>
+        {% if current_user.is_authenticated and current_user.id != listing.owner_id %}
+          <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#reviewModalExchange">Оставить отзыв</button>
+        {% endif %}
+
+        <!-- Modal: add review -->
+        <div class="modal fade" id="reviewModalExchange" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Отзыв о владельце</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form method="post" action="{{ url_for('reviews.create_exchange_review', listing_id=listing.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label class="form-label">Оценка</label>
+                    <input type="number" name="rating" min="1" max="5" class="form-control" required>
+                  </div>
+                  <div class="mb-0">
+                    <label class="form-label">Комментарий</label>
+                    <textarea name="comment" class="form-control" rows="4"></textarea>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                  <button type="submit" class="btn btn-accent">Отправить</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3">
+          <img src="{{ listing.owner.avatar or url_for('static', filename='images/avatar-placeholder.svg') }}" class="rounded-circle avatar-nav me-2" alt="">
+          <div>
+            <div class="fw-semibold">{{ listing.owner.username }}</div>
+            <div class="small text-muted">Рейтинг: {{ listing.owner.rating or 0 }} ({{ listing.owner.review_count or 0 }})</div>
+          </div>
+        </div>
+        {% if current_user.is_authenticated and current_user.id != listing.owner_id %}
+          <form method="post" action="{{ url_for('messages.start_from_listing', listing_id=listing.id) }}" class="mb-3">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-accent w-100" type="submit">Написать владельцу</button>
+          </form>
+        {% endif %}
+        {% if listing.available_from or listing.available_to %}
+          <div class="small text-muted">Доступно: {{ listing.available_from or 'с' }} — {{ listing.available_to or 'по' }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

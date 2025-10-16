@@ -9,8 +9,8 @@
       <h1 class="display-5 fw-bold mb-3">Путешествуй по России, меняясь жильём</h1>
       <p class="lead mb-4">Экономь на проживании и находи друзей в разных городах. А ещё — изучай города через удалённые экскурсии с местными жителями.</p>
       <div class="d-flex gap-2">
-        <a href="#" class="btn btn-accent btn-lg">Найти обмен жилья</a>
-        <a href="#" class="btn btn-outline-light btn-lg">Удалённый туризм</a>
+        <a href="{{ url_for('exchange.listing_search') }}" class="btn btn-accent btn-lg">Найти обмен жилья</a>
+        <a href="{{ url_for('tourism.tourism_search') }}" class="btn btn-outline-light btn-lg">Удалённый туризм</a>
       </div>
     </div>
     <div class="col-lg-5 d-none d-lg-block text-end">

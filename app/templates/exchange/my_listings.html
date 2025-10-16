@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои объявления — Room2room Tour{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h5 mb-0">Мои объявления</h1>
+  <a href="{{ url_for('exchange.new_listing') }}" class="btn btn-accent">Создать объявление</a>
+  </div>
+
+{% if not listings %}
+  <div class="text-muted">У вас пока нет объявлений.</div>
+{% else %}
+  <div class="row g-4">
+    {% for item in listings %}
+      <div class="col-12 col-md-6 col-lg-4">
+        <a href="{{ url_for('exchange.listing_detail', listing_id=item.id) }}" class="text-decoration-none">
+          <div class="card listing-card h-100 shadow-sm">
+            <div class="ratio ratio-4x3 listing-thumb">
+              {% set photo = (item.photos[0] if item.photos and item.photos|length > 0 else url_for('static', filename='images/hero-mountains.png')) %}
+              <img src="{{ photo }}" alt="" class="img-cover">
+            </div>
+            <div class="card-body">
+              <div class="small text-muted mb-1">{{ item.city or 'Город' }}</div>
+              <h2 class="h6 mb-1 text-dark">{{ item.title }}</h2>
+              <div class="small text-muted">{{ item.housing_type or 'Тип' }} · {{ item.room_count or 0 }} комн.</div>
+            </div>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}
+
+

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Новое объявление — Room2room Tour{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h5 mb-3">Новое объявление</h1>
+        <form method="post" novalidate>
+          {{ form.hidden_tag() }}
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">{{ form.title.label }}</label>
+              {{ form.title(class_='form-control ' + ('is-invalid' if form.title.errors else '')) }}
+              {% if form.title.errors %}<div class="invalid-feedback">{{ form.title.errors[0] }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ form.city.label }}</label>
+              {{ form.city(class_='form-control') }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ form.address.label }}</label>
+              {{ form.address(class_='form-control') }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">{{ form.housing_type.label }}</label>
+              {{ form.housing_type(class_='form-select') }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">{{ form.room_count.label }}</label>
+              {{ form.room_count(class_='form-control') }}
+            </div>
+            <div class="col-md-4"></div>
+            <div class="col-md-6">
+              <label class="form-label">{{ form.available_from.label }}</label>
+              {{ form.available_from(class_='form-control', type='date') }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ form.available_to.label }}</label>
+              {{ form.available_to(class_='form-control', type='date') }}
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{ form.amenities.label }}</label>
+              {{ form.amenities(class_='form-control') }}
+              <div class="form-text">Например: Wi-Fi, парковка, кухня</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{ form.photos.label }}</label>
+              {{ form.photos(class_='form-control') }}
+              <div class="form-text">Укажите ссылки на изображения через запятую</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{ form.description.label }}</label>
+              {{ form.description(class_='form-control', rows=6) }}
+            </div>
+          </div>
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <a href="{{ url_for('exchange.my_listings') }}" class="btn btn-outline-secondary">Отмена</a>
+            <button class="btn btn-accent" type="submit">Создать</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

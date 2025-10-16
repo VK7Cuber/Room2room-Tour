@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Чат — Room2room Tour{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <a href="{{ url_for('messages.inbox') }}" class="small text-decoration-none">← Все диалоги</a>
+        <div class="d-flex align-items-center mt-2">
+          <img src="{{ peer.avatar or url_for('static', filename='images/avatar-placeholder.svg') }}" class="rounded-circle avatar-nav me-2" alt="">
+          <div>
+            <div class="fw-semibold">{{ peer.username }}</div>
+            <div class="small text-muted">Город: {{ peer.city or '—' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-body chat-box">
+        {% if not messages %}
+          <div class="text-muted">Начните переписку.</div>
+        {% else %}
+          {% for m in messages %}
+          <div class="d-flex mb-2 {% if m.sender_id == current_user.id %}justify-content-end{% endif %}">
+            <div class="chat-bubble {% if m.sender_id == current_user.id %}me{% else %}them{% endif %}">
+              <div class="small text-muted">{{ m.timestamp.strftime('%d.%m.%Y %H:%M') }}</div>
+              <div>{{ m.content }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+      <div class="card-footer bg-white">
+        <form method="post" class="d-flex gap-2">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="text" name="content" class="form-control" placeholder="Напишите сообщение..." autocomplete="off" />
+          <button class="btn btn-accent" type="submit">Отправить</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
