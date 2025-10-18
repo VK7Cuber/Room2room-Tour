@@ -3,7 +3,12 @@
 {% block title %}Мои бронирования — Room2room Tour{% endblock %}
 
 {% block content %}
-<h1 class="h5 mb-3">Мои бронирования</h1>
+<div class="d-flex align-items-center mb-3">
+  <a href="{{ url_for('account.dashboard') }}" class="btn btn-outline-secondary btn-sm me-3">
+    <i class="fa fa-arrow-left"></i> Назад в кабинет
+  </a>
+  <h1 class="h5 mb-0">Мои бронирования</h1>
+</div>
 
 {% if not bookings %}
   <div class="text-muted">Пока нет бронирований.</div>

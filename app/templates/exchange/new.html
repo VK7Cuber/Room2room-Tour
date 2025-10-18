@@ -8,7 +8,7 @@
     <div class="card shadow-sm">
       <div class="card-body p-4">
         <h1 class="h5 mb-3">Новое объявление</h1>
-        <form method="post" novalidate>
+        <form method="post" enctype="multipart/form-data" novalidate>
           {{ form.hidden_tag() }}
           <div class="row g-3">
             <div class="col-12">

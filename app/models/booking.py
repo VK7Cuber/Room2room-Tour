@@ -13,6 +13,7 @@ class Booking(db.Model):
 
     start_date = db.Column(db.Date, nullable=False, default=date.today)
     end_date = db.Column(db.Date, nullable=False, default=date.today)
+    hours = db.Column(db.Integer, nullable=False, default=1)
     status = db.Column(db.String(32), nullable=False, default="pending", index=True)
     total_price = db.Column(db.Integer, nullable=False, default=0)
 

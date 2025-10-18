@@ -64,7 +64,7 @@
           <div class="flex-shrink-0" style="width: 160px;">
             <div class="ratio ratio-4x3 listing-thumb rounded">
               {% set photo = (item.photos[0] if item.photos and item.photos|length > 0 else url_for('static', filename='images/hero-mountains.png')) %}
-              <img src="{{ photo }}" alt="" class="img-cover rounded">
+              <img src="{{ photo|media }}" alt="" class="img-cover rounded">
             </div>
           </div>
           <div class="flex-grow-1">

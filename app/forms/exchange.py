@@ -1,6 +1,7 @@
-from wtforms import StringField, TextAreaField, IntegerField, SelectField, DateField, FieldList
+from wtforms import StringField, TextAreaField, IntegerField, SelectField, DateField
 from wtforms.validators import DataRequired, Length, Optional, NumberRange
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 
 
 class ListingForm(FlaskForm):
@@ -18,7 +19,11 @@ class ListingForm(FlaskForm):
     available_to = DateField("Доступно по", validators=[Optional()])
     # Для простоты: ввод удобств и фото через запятую (позже заменим на теги/загрузчик)
     amenities = StringField("Удобства (через запятую)", validators=[Optional(), Length(max=500)])
-    photos = StringField("Фото URL (через запятую)", validators=[Optional(), Length(max=2000)])
+    photos = FileField(
+        "Фото (png/jpg/jpeg/webp)",
+        validators=[Optional(), FileAllowed(["jpg", "jpeg", "png", "webp"], "Только изображения")],
+        render_kw={"multiple": True},
+    )
 
 
 class FilterForm(FlaskForm):

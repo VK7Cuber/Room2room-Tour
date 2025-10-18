@@ -9,7 +9,7 @@
       <div class="card-body">
         <a href="{{ url_for('messages.inbox') }}" class="small text-decoration-none">← Все диалоги</a>
         <div class="d-flex align-items-center mt-2">
-          <img src="{{ peer.avatar or url_for('static', filename='images/avatar-placeholder.svg') }}" class="rounded-circle avatar-nav me-2" alt="">
+          <img src="{{ (peer.avatar or '')|media or url_for('static', filename='images/avatar-placeholder.svg') }}" class="rounded-circle avatar-nav me-2" alt="">
           <div>
             <div class="fw-semibold">{{ peer.username }}</div>
             <div class="small text-muted">Город: {{ peer.city or '—' }}</div>

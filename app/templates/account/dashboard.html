@@ -7,7 +7,7 @@
   <div class="col-12 col-lg-4">
     <div class="card h-100 shadow-sm">
       <div class="card-body d-flex align-items-center">
-        <img src="{{ current_user.avatar or url_for('static', filename='images/avatar-placeholder.png') }}" class="rounded-circle me-3" width="64" height="64" alt="avatar">
+        <img src="{{ (current_user.avatar or '')|media or url_for('static', filename='images/avatar-placeholder.png') }}" class="rounded-circle me-3" width="64" height="64" alt="avatar">
         <div>
           <div class="fw-semibold">{{ current_user.username }}</div>
           <div class="small text-muted">{{ current_user.city or 'Город не указан' }}</div>
@@ -41,8 +41,23 @@
           </div>
           <div class="col-6 col-md-3">
             <div class="stat-tile">
-              <div class="stat-num">{{ stats.messages }}</div>
-              <div class="stat-label">Сообщения</div>
+              <div class="stat-num">{{ stats.tours }}</div>
+              <div class="stat-label">Онлайн-экскурсии</div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          {% set rating = stats.rating or 0 %}
+          {% set rating_class = 'rating-bad' %}
+          {% if rating > 4.5 %}
+            {% set rating_class = 'rating-good' %}
+          {% elif rating >= 3 %}
+            {% set rating_class = 'rating-mid' %}
+          {% endif %}
+          <div class="rating-tile {{ rating_class }}">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-semibold">Рейтинг</span>
+              <span class="fs-5">{{ '%.2f'|format(rating) }}</span>
             </div>
           </div>
         </div>
@@ -53,12 +68,13 @@
 
 <div class="card mt-4 shadow-sm">
   <div class="card-body">
-    <h2 class="h5 mb-3">Быстрые действия</h2>
+    <h2 class="h5 mb-3">Моя активность</h2>
     <div class="d-flex flex-wrap gap-2">
-      <a href="{{ url_for('exchange.new_listing') }}" class="btn btn-accent">Создать объявление</a>
+      
       <a href="{{ url_for('exchange.my_listings') }}" class="btn btn-outline-secondary">Мои объявления</a>
       <a href="{{ url_for('account.my_tours') }}" class="btn btn-outline-secondary">Мои туры</a>
       <a href="{{ url_for('account.my_bookings') }}" class="btn btn-outline-secondary">Мои бронирования</a>
+      <a href="{{ url_for('account.my_excursions') }}" class="btn btn-outline-secondary">Запланированные экскурсии</a>
       <a href="{{ url_for('messages.inbox') }}" class="btn btn-outline-secondary">Мои сообщения</a>
     </div>
   </div>

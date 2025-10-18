@@ -12,7 +12,7 @@
             {% for p in tour.photos %}
               <div class="carousel-item {% if loop.first %}active{% endif %}">
                 <div class="ratio ratio-16x9">
-                  <img src="{{ p }}" class="img-cover rounded-top" alt="Фото {{ loop.index }}">
+                  <img src="{{ p|media }}" class="img-cover rounded-top" alt="Фото {{ loop.index }}">
                 </div>
               </div>
             {% endfor %}
@@ -56,7 +56,7 @@
     <div class="card shadow-sm">
       <div class="card-body">
         <div class="d-flex align-items-center mb-3">
-          <img src="{{ tour.guide.avatar or url_for('static', filename='images/avatar-placeholder.svg') }}" class="rounded-circle avatar-nav me-2" alt="">
+          <img src="{{ (tour.guide.avatar or '')|media or url_for('static', filename='images/avatar-placeholder.svg') }}" class="rounded-circle avatar-nav me-2" alt="">
           <div>
             <div class="fw-semibold">{{ tour.guide.username }}</div>
             <div class="small text-muted">Рейтинг: {{ tour.guide.rating or 0 }} ({{ tour.guide.review_count or 0 }})</div>

@@ -33,7 +33,14 @@ def tourism_search():
 def tourism_new():
     form = TourismOfferForm()
     if form.validate_on_submit():
-        photos = [s.strip() for s in (form.photos.data or "").split(",") if s.strip()]
+        photos = []
+        if "photos" in request.files:
+            files = request.files.getlist("photos")
+            from app.utils.helpers import save_image
+            for f in files:
+                rel = save_image(f, subdir="tour_photos")
+                if rel:
+                    photos.append(rel)
         tour = RemoteTourism(
             guide_id=current_user.id,
             city=form.city.data.strip() if form.city.data else None,
@@ -61,18 +68,31 @@ def tourism_edit(tour_id: int):
         return redirect(url_for("account.my_tours"))
     form = TourismOfferForm(obj=tour)
     if request.method == "GET":
-        form.photos.data = ", ".join(tour.photos or [])
+        form.photos.data = None
     if form.validate_on_submit():
         tour.city = form.city.data.strip() if form.city.data else None
         tour.title = form.title.data.strip()
         tour.description = form.description.data.strip() if form.description.data else None
         tour.price_per_hour = form.price_per_hour.data
         tour.duration_hours = form.duration_hours.data
-        photos_raw = form.photos.data
-        if isinstance(photos_raw, (list, tuple)):
-            tour.photos = [s.strip() for s in photos_raw if isinstance(s, str) and s.strip()]
-        else:
-            tour.photos = [s.strip() for s in str(photos_raw or "").split(",") if s.strip()]
+        # handle deletions
+        to_delete = set(request.form.getlist("delete_photos"))
+        if to_delete:
+            from app.utils.helpers import delete_media_file
+            tour.photos = [p for p in (tour.photos or []) if p not in to_delete]
+            for p in to_delete:
+                delete_media_file(p)
+
+        new_photos = []
+        if "photos" in request.files:
+            files = request.files.getlist("photos")
+            from app.utils.helpers import save_image
+            for f in files:
+                rel = save_image(f, subdir="tour_photos")
+                if rel:
+                    new_photos.append(rel)
+        if new_photos:
+            tour.photos = (tour.photos or []) + new_photos
         tour.available_from = form.available_from.data
         tour.available_to = form.available_to.data
         db.session.commit()
@@ -171,6 +191,7 @@ def tourism_book(tour_id: int):
             tourism_id=tour.id,
             start_date=form.start_date.data,
             end_date=form.end_date.data,
+            hours=form.hours.data or tour.duration_hours or 1,
             status="pending",
             total_price=total_price,
         )

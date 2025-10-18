@@ -8,7 +8,7 @@
     <div class="card shadow-sm">
       <div class="card-body p-4">
         <h1 class="h5 mb-3">Редактировать предложение</h1>
-        <form method="post" novalidate>
+        <form method="post" enctype="multipart/form-data" novalidate>
           {{ form.hidden_tag() }}
           <div class="row g-3">
             <div class="col-12">
@@ -31,6 +31,27 @@
               <label class="form-label">{{ form.photos.label }}</label>
               {{ form.photos(class_='form-control') }}
             </div>
+          {% if tour.photos and tour.photos|length %}
+          <div class="col-12">
+            <label class="form-label">Текущие фото</label>
+            <div class="row g-3">
+              {% for p in tour.photos %}
+              <div class="col-6 col-md-4">
+                <div class="card h-100">
+                  <img src="{{ p|media }}" class="card-img-top" alt="">
+                  <div class="card-body p-2 d-flex align-items-center justify-content-between">
+                    <small class="text-truncate me-2">Фото {{ loop.index }}</small>
+                    <div class="form-check m-0">
+                      <input class="form-check-input" type="checkbox" name="delete_photos" value="{{ p }}" id="delTourPhoto{{ loop.index }}">
+                      <label class="form-check-label small" for="delTourPhoto{{ loop.index }}">Удалить</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
             <div class="col-md-6">
               <label class="form-label">{{ form.available_from.label }}</label>
               {{ form.available_from(class_='form-control', type='date') }}

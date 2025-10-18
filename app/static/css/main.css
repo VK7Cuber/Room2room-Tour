@@ -49,6 +49,16 @@
 .stat-num { font-size: 1.5rem; font-weight: 800; color: var(--r2r-dark); }
 .stat-label { font-size: .875rem; color: #6c757d; }
 
+/* Rating bar */
+.rating-tile {
+  border-radius: .75rem;
+  padding: 1rem 1.25rem;
+  color: #fff;
+}
+.rating-good { background: linear-gradient(135deg, #2e7d32, #43a047); }
+.rating-mid { background: linear-gradient(135deg, #ef6c00, #f39c12); }
+.rating-bad { background: linear-gradient(135deg, #c62828, #e53935); }
+
 /* Navbar avatar */
 .avatar-nav { width: 28px; height: 28px; object-fit: cover; }
 

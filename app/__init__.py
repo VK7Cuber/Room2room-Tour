@@ -82,5 +82,17 @@ def create_app() -> Flask:
 
     app.jinja_env.filters["linkify"] = linkify
 
+    # media filter: converts stored relative paths (uploads/..) to full static URL
+    from flask import url_for
+
+    def media(src: str):
+        if not src:
+            return ""
+        if src.startswith("http") or src.startswith("data:"):
+            return src
+        return url_for("static", filename=src)
+
+    app.jinja_env.filters["media"] = media
+
     return app
 

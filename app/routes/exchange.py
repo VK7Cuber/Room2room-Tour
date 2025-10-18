@@ -30,7 +30,15 @@ def new_listing():
     form = ListingForm()
     if form.validate_on_submit():
         amenities = [s.strip() for s in (form.amenities.data or "").split(",") if s.strip()]
-        photos = [s.strip() for s in (form.photos.data or "").split(",") if s.strip()]
+        photos = []
+        # handle multiple files
+        if "photos" in request.files:
+            files = request.files.getlist("photos")
+            from app.utils.helpers import save_image
+            for f in files:
+                rel = save_image(f, subdir="listing_photos")
+                if rel:
+                    photos.append(rel)
         listing = HousingExchange(
             owner_id=current_user.id,
             title=form.title.data.strip(),
@@ -63,7 +71,7 @@ def edit_listing(listing_id: int):
     # Pre-populate comma-separated strings for list fields
     if request.method == "GET":
         form.amenities.data = ", ".join(listing.amenities or [])
-        form.photos.data = ", ".join(listing.photos or [])
+        form.photos.data = None
     if form.validate_on_submit():
         listing.title = form.title.data.strip()
         listing.description = form.description.data.strip() if form.description.data else None
@@ -74,15 +82,29 @@ def edit_listing(listing_id: int):
         listing.available_from = form.available_from.data
         listing.available_to = form.available_to.data
         amenities_raw = form.amenities.data
-        photos_raw = form.photos.data
         if isinstance(amenities_raw, (list, tuple)):
             listing.amenities = [s.strip() for s in amenities_raw if isinstance(s, str) and s.strip()]
         else:
             listing.amenities = [s.strip() for s in str(amenities_raw or "").split(",") if s.strip()]
-        if isinstance(photos_raw, (list, tuple)):
-            listing.photos = [s.strip() for s in photos_raw if isinstance(s, str) and s.strip()]
-        else:
-            listing.photos = [s.strip() for s in str(photos_raw or "").split(",") if s.strip()]
+        # handle deletions
+        to_delete = set(request.form.getlist("delete_photos"))
+        if to_delete:
+            from app.utils.helpers import delete_media_file
+            listing.photos = [p for p in (listing.photos or []) if p not in to_delete]
+            for p in to_delete:
+                delete_media_file(p)
+        # photos: merge existing + uploaded
+        new_photos = []
+        if "photos" in request.files:
+            files = request.files.getlist("photos")
+            from app.utils.helpers import save_image
+            for f in files:
+                rel = save_image(f, subdir="listing_photos")
+                if rel:
+                    new_photos.append(rel)
+        # if no new uploads, keep existing; if uploads present, append to existing
+        if new_photos:
+            listing.photos = (listing.photos or []) + new_photos
         db.session.commit()
         flash("Объявление обновлено", "success")
         return redirect(url_for("exchange.my_listings"))

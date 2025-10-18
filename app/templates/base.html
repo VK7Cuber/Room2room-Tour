@@ -39,7 +39,7 @@
             {% if current_user.is_authenticated %}
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <img src="{{ current_user.avatar or url_for('static', filename='images/avatar-placeholder.svg') }}" class="rounded-circle avatar-nav" alt="{{ current_user.username }}">
+                  <img src="{{ (current_user.avatar or '')|media or url_for('static', filename='images/avatar-placeholder.svg') }}" class="rounded-circle avatar-nav me-2" alt="">
                   <span class="small">{{ current_user.username }}</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
