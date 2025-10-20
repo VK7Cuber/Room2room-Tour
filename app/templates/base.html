@@ -11,7 +11,10 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
-        <a class="navbar-brand fw-bold" href="/">Room2room Tour</a>
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/">
+          <img src="{{ url_for('static', filename='images/Room2roomTour_logo.png') }}" alt="Room2room Tour" width="45" height="45" class="d-inline-block align-text-top">
+          <span>Room2room Tour</span>
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>

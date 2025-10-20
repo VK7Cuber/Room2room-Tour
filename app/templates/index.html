@@ -14,26 +14,30 @@
       </div>
     </div>
     <div class="col-lg-5 d-none d-lg-block text-end">
-      <img src="{{ url_for('static', filename='images/x.jpg') }}" class="img-fluid hero-illustration" alt="Горы и путешествия">
+      <img src="{{ url_for('static', filename='images/Moscow_city_prview.png') }}" class="img-fluid hero-illustration main-image">
     </div>
   </div>
   </section>
 
 <section class="mb-5">
-  <h2 class="h4 mb-4">Популярные направления</h2>
-  <div class="row g-4">
-    {% for city in ['Москва','Санкт-Петербург','Казань','Владивосток','Сочи','Екатеринбург'] %}
-    <div class="col-6 col-md-4 col-lg-3">
-      <div class="card city-card h-100">
-        <div class="ratio ratio-4x3 bg-body-tertiary rounded-top"></div>
-        <div class="card-body">
-          <h3 class="h6 mb-1">{{ city }}</h3>
-          <div class="small text-muted">обменов: {{ 100 + loop.index * 7 }}</div>
-        </div>
+  <h2 class="h4 mb-4">Куда поедем в отпуск?</h2>
+  {% if attraction %}
+  <div class="row g-4 align-items-center">
+    <div class="col-md-6">
+      <div class="ratio ratio-16x9 rounded-3 overflow-hidden bg-body-tertiary">
+        <img src="{{ url_for('static', filename=attraction.filename) }}" alt="{{ attraction.title }}" class="img-cover">
       </div>
     </div>
-    {% endfor %}
+    <div class="col-md-6">
+      <h3 class="h5 mb-2">{{ attraction.title }}</h3>
+      <p class="text-muted mb-3">{{ attraction.description }}</p>
+      <div class="d-flex gap-2">
+        <a href="{{ url_for('tourism.tourism_search') }}" class="btn btn-accent">Посмотреть экскурсии</a>
+        <a href="{{ url_for('exchange.listing_search') }}" class="btn btn-outline-secondary">Искать обмен жилья</a>
+      </div>
+    </div>
   </div>
+  {% endif %}
 </section>
 
 <section class="mb-5">

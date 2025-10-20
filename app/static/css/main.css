@@ -25,7 +25,26 @@
   background: linear-gradient(135deg, var(--r2r-green), var(--r2r-brown));
 }
 
-.hero-illustration { max-height: 220px; opacity: 0.95; }
+.hero-illustration { opacity: 0.95; }
+
+/* Hero layout enhancements for big, attractive image */
+.hero .row { min-height: 360px; }
+.hero .col-lg-5 { position: relative; min-height: 260px; }
+.hero .col-lg-5 .hero-illustration {
+  position: absolute;
+  right: -6%;
+  bottom: -6%;
+  width: 125%;
+  height: 125%;
+  object-fit: cover;
+  object-position: right center;
+}
+
+.main-image { 
+  border:5px solid #d4702c; 
+  border-radius:5px;
+  margin-right: 6%;
+}
 
 .city-card .ratio { background-image: linear-gradient(135deg, #e6f0ea, #f3ede7); }
 
