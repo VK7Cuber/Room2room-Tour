@@ -23,7 +23,7 @@
         <div class="card listing-card h-100 shadow-sm">
             <div class="ratio ratio-4x3 listing-thumb">
               {% set photo = (item.photos[0] if item.photos and item.photos|length > 0 else url_for('static', filename='images/hero-mountains.png')) %}
-              <img src="{{ photo|media }}" alt="" class="img-cover">
+              <img src="{{ photo|media }}" alt="" class="img-cover" loading="lazy" decoding="async" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw">
             </div>
             <div class="card-body">
               <div class="small text-muted mb-1">{{ item.city or 'Город' }}</div>

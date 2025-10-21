@@ -16,12 +16,12 @@
   <div class="list-group shadow-sm">
     {% for b in bookings %}
       <div class="list-group-item">
-        <div class="d-flex justify-content-between">
+        <div class="d-flex align-items-start justify-content-between flex-wrap gap-2">
           <div>
             <div class="fw-semibold">Статус: {{ b.status }}</div>
             <div class="small text-muted">{{ b.start_date }} — {{ b.end_date }}</div>
           </div>
-          <div class="text-end">
+          <div class="text-end ms-md-auto">
             <div class="fw-semibold">{{ b.total_price }} ₽</div>
             {% if b.tourism_id %}
               <div class="small"><a href="{{ url_for('tourism.tourism_detail', tour_id=b.tourism_id) }}">К экскурсии</a></div>

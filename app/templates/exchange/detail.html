@@ -12,14 +12,14 @@
             {% for p in listing.photos %}
               <div class="carousel-item {% if loop.first %}active{% endif %}">
                 <div class="ratio ratio-16x9">
-                  <img src="{{ p|media }}" class="img-cover rounded-top" alt="Фото {{ loop.index }}">
+                  <img src="{{ p|media }}" class="img-cover rounded-top" alt="Фото {{ loop.index }}" loading="lazy" decoding="async">
                 </div>
               </div>
             {% endfor %}
           {% else %}
             <div class="carousel-item active">
               <div class="ratio ratio-16x9">
-                <img src="{{ url_for('static', filename='images/hero-mountains.png') }}" class="img-cover rounded-top" alt="">
+                <img src="{{ url_for('static', filename='images/hero-mountains.png') }}" class="img-cover rounded-top" alt="" loading="lazy" decoding="async">
               </div>
             </div>
           {% endif %}

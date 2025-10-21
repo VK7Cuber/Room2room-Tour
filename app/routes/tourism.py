@@ -229,13 +229,24 @@ def start_from_tour(tour_id: int):
     if tour.guide_id == current_user.id:
         return redirect(url_for("tourism.tourism_detail", tour_id=tour.id))
 
-    msg = Message(
-        sender_id=current_user.id,
-        receiver_id=tour.guide_id,
-        content=f"Здравствуйте! Интересует удалённая экскурсия: {tour.title}",
-    )
-    db.session.add(msg)
-    db.session.commit()
+    # Проверяем, была ли ранее переписка между пользователем и гидом
+    exists = db.session.execute(
+        select(func.count(Message.id)).where(
+            or_(
+                and_(Message.sender_id == current_user.id, Message.receiver_id == tour.guide_id),
+                and_(Message.sender_id == tour.guide_id, Message.receiver_id == current_user.id),
+            )
+        )
+    ).scalar() or 0
+
+    if not exists:
+        msg = Message(
+            sender_id=current_user.id,
+            receiver_id=tour.guide_id,
+            content=f"Здравствуйте! Интересует удалённая экскурсия: {tour.title}",
+        )
+        db.session.add(msg)
+        db.session.commit()
     return redirect(url_for("messages.chat", user_id=tour.guide_id))
 
 

@@ -55,7 +55,7 @@
               {% for p in listing.photos %}
               <div class="col-6 col-md-4">
                 <div class="card h-100">
-                  <img src="{{ p|media }}" class="card-img-top" alt="">
+                  <img src="{{ p|media }}" class="card-img-top" alt="" loading="lazy" decoding="async">
                   <div class="card-body p-2 d-flex align-items-center justify-content-between">
                     <small class="text-truncate me-2">Фото {{ loop.index }}</small>
                     <div class="form-check m-0">

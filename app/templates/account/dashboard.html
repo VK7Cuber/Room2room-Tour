@@ -7,7 +7,7 @@
   <div class="col-12 col-lg-4">
     <div class="card h-100 shadow-sm">
       <div class="card-body d-flex align-items-center">
-        <img src="{{ (current_user.avatar or '')|media or url_for('static', filename='images/avatar-placeholder.png') }}" class="rounded-circle me-3" width="64" height="64" alt="avatar">
+        <img src="{{ (current_user.avatar or '')|media or url_for('static', filename='images/avatar-placeholder.png') }}" class="rounded-circle me-3" width="64" height="64" alt="avatar" loading="lazy" decoding="async">
         <div>
           <div class="fw-semibold">{{ current_user.username }}</div>
           <div class="small text-muted">{{ current_user.city or 'Город не указан' }}</div>

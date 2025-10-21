@@ -14,7 +14,7 @@
       </div>
     </div>
     <div class="col-lg-5 d-none d-lg-block text-end">
-      <img src="{{ url_for('static', filename='images/Moscow_city_prview.png') }}" class="img-fluid hero-illustration main-image">
+      <img src="{{ url_for('static', filename='images/Moscow_city_prview.png') }}" class="img-fluid hero-illustration main-image" loading="lazy" alt="Москва-Сити">
     </div>
   </div>
   </section>
@@ -25,7 +25,7 @@
   <div class="row g-4 align-items-center">
     <div class="col-md-6">
       <div class="ratio ratio-16x9 rounded-3 overflow-hidden bg-body-tertiary">
-        <img src="{{ url_for('static', filename=attraction.filename) }}" alt="{{ attraction.title }}" class="img-cover">
+        <img src="{{ url_for('static', filename=attraction.filename) }}" alt="{{ attraction.title }}" class="img-cover" loading="lazy">
       </div>
     </div>
     <div class="col-md-6">

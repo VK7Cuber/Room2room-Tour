@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import os
 import re
 from markupsafe import Markup
+from zoneinfo import ZoneInfo
 
 
 db = SQLAlchemy()
@@ -93,6 +94,28 @@ def create_app() -> Flask:
         return url_for("static", filename=src)
 
     app.jinja_env.filters["media"] = media
+
+    # datetime formatting filter with timezone (default Europe/Moscow)
+    def format_dt(value, fmt: str = "%d.%m.%Y %H:%M", tz_name: str | None = None) -> Markup:
+        if not value:
+            return Markup("")
+        try:
+            tz = ZoneInfo(tz_name or os.getenv("APP_TZ", "Europe/Moscow"))
+        except Exception:
+            tz = None
+        # Assume stored timestamps are UTC naive
+        dt = value
+        try:
+            utc = ZoneInfo("UTC")
+            if getattr(dt, "tzinfo", None) is None:
+                dt = dt.replace(tzinfo=utc)
+            if tz:
+                dt = dt.astimezone(tz)
+        except Exception:
+            pass
+        return Markup(dt.strftime(fmt))
+
+    app.jinja_env.filters["format_dt"] = format_dt
 
     return app
 

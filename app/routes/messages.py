@@ -100,15 +100,25 @@ def start_from_listing(listing_id: int):
     if listing.owner_id == current_user.id:
         return redirect(url_for("exchange.listing_detail", listing_id=listing.id))
 
-    # Сделаем начальное системное сообщение-приглашение
-    msg = Message(
-        sender_id=current_user.id,
-        receiver_id=listing.owner_id,
-        exchange_id=listing.id,
-        content=f"Здравствуйте! Заинтересовался вашим объявлением: {listing.title}",
-    )
-    db.session.add(msg)
-    db.session.commit()
+    # Если переписка уже существует между пользователями — не отправляем приветствие повторно
+    exists = db.session.execute(
+        select(db.func.count(Message.id)).where(
+            or_(
+                and_(Message.sender_id == current_user.id, Message.receiver_id == listing.owner_id),
+                and_(Message.sender_id == listing.owner_id, Message.receiver_id == current_user.id),
+            )
+        )
+    ).scalar() or 0
+
+    if not exists:
+        msg = Message(
+            sender_id=current_user.id,
+            receiver_id=listing.owner_id,
+            exchange_id=listing.id,
+            content=f"Здравствуйте! Заинтересовался вашим объявлением: {listing.title}",
+        )
+        db.session.add(msg)
+        db.session.commit()
     return redirect(url_for("messages.chat", user_id=listing.owner_id))
 
 
