@@ -1,3 +1,4 @@
+gunicorn
 Flask==2.3.3
 Flask-Login==0.6.3
 Flask-JWT-Extended==4.6.0
