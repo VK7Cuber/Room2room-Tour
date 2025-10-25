@@ -29,3 +29,18 @@ class Config:
     MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
     MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER", "noreply@room2room.local")
 
+    # Media storage (S3-compatible object storage recommended for Render)
+    # If S3_BUCKET is set, uploads will be stored in object storage; otherwise local filesystem is used.
+    S3_BUCKET = os.getenv("S3_BUCKET", "")
+    S3_REGION = os.getenv("S3_REGION", "eu-central-1")
+    S3_ENDPOINT_URL = os.getenv("S3_ENDPOINT_URL", "")  # e.g. https://storage.yandexcloud.net
+    S3_ACCESS_KEY_ID = os.getenv("S3_ACCESS_KEY_ID", "")
+    S3_SECRET_ACCESS_KEY = os.getenv("S3_SECRET_ACCESS_KEY", "")
+    # Public base URL for serving objects (CDN or bucket website). If empty, SDK URL will be used.
+    S3_PUBLIC_URL = os.getenv("S3_PUBLIC_URL", "")  # e.g. https://<bucket>.storage.yandexcloud.net
+    # Whether to attempt deleting objects from storage when users remove photos
+    S3_DELETE_ENABLED = os.getenv("S3_DELETE_ENABLED", "true").lower() == "true"
+
+    # App timezone for displaying naive UTC timestamps
+    APP_TZ = os.getenv("APP_TZ", "Europe/Moscow")
+
