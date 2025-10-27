@@ -9,7 +9,11 @@ class ProfileForm(FlaskForm):
     last_name = StringField("Фамилия", validators=[Optional(), Length(max=64)])
     city = StringField("Город", validators=[Optional(), Length(max=128)])
     phone = StringField("Телефон", validators=[Optional(), Length(max=32)])
-    avatar = FileField("Аватар", validators=[Optional(), FileAllowed(["jpg", "jpeg", "png", "webp"], "Только изображения")])
+    avatar = FileField(
+        "Аватар",
+        validators=[Optional(), FileAllowed(["jpg", "jpeg", "png", "webp"], "Только изображения: JPG, PNG, WEBP")],
+        render_kw={"accept": "image/jpeg,image/png,image/webp"},
+    )
     description = TextAreaField("О себе", validators=[Optional(), Length(max=2000)])
     submit = SubmitField("Сохранить")
 

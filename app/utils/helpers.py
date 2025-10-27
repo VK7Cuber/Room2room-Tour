@@ -25,6 +25,10 @@ def _get_s3_client():
         if cfg.get("S3_ACCESS_KEY_ID") and cfg.get("S3_SECRET_ACCESS_KEY"):
             kwargs["aws_access_key_id"] = cfg["S3_ACCESS_KEY_ID"]
             kwargs["aws_secret_access_key"] = cfg["S3_SECRET_ACCESS_KEY"]
+        # forcing addressing style if provided (useful for Vercel + custom endpoint)
+        addressing = cfg.get("S3_ADDRESSING_STYLE")
+        if addressing:
+            kwargs.setdefault("config", boto3.session.Config(s3={"addressing_style": addressing}))
         _S3_CLIENT = boto3.client("s3", **kwargs)
         return _S3_CLIENT
     except Exception:
@@ -40,7 +44,9 @@ def _s3_public_url(key: str) -> str:
     region = cfg.get("S3_REGION") or "us-east-1"
     endpoint = (cfg.get("S3_ENDPOINT_URL") or "").rstrip("/")
     if endpoint and "amazonaws.com" not in endpoint:
+        # Prefer path-style for generic endpoints: https://endpoint/bucket/key
         return f"{endpoint}/{bucket}/{key}"
+    # Fallback to virtual-hosted style for AWS
     return f"https://{bucket}.s3.{region}.amazonaws.com/{key}"
 
 def normalize_database_url(url: str) -> str:
@@ -78,8 +84,6 @@ def save_image(file_storage, subdir: str = "uploads") -> str:
         return ""
     filename = secure_filename(file_storage.filename)
     ext = os.path.splitext(filename)[1].lower()
-    if ext not in {'.png', '.jpg', '.jpeg', '.webp'}:
-        return ""
     new_name = f"{uuid.uuid4().hex}{ext}"
     key = f"{subdir}/{new_name}"
 
@@ -100,25 +104,61 @@ def save_image(file_storage, subdir: str = "uploads") -> str:
     if not content:
         return ""
 
+    # MIME validation + optional HEIC->JPEG conversion
+    try:
+        from PIL import Image
+        try:
+            import pillow_heif
+            pillow_heif.register_heif_opener()
+        except Exception:
+            pass
+        img = Image.open(io.BytesIO(content))
+        # If HEIC/HEIF, convert to JPEG
+        fmt = (img.format or "").upper()
+        if fmt in {"HEIC", "HEIF"}:
+            buf = io.BytesIO()
+            rgb = img.convert("RGB")
+            rgb.save(buf, format="JPEG", quality=90)
+            content = buf.getvalue()
+            ext = ".jpg"
+            key = f"{subdir}/{uuid.uuid4().hex}{ext}"
+        else:
+            # ensure it's an image format we support
+            if fmt not in {"JPEG", "JPG", "PNG", "WEBP"}:
+                return ""
+    except Exception:
+        # Not an image or cannot be parsed
+        return ""
+
     # Try S3-compatible storage
     s3 = _get_s3_client()
     bucket = current_app.config.get("S3_BUCKET")
     if s3 and bucket:
         try:
-            extra_args = {"ContentType": getattr(file_storage, 'mimetype', None) or "application/octet-stream", "ACL": "public-read"}
+            # Re-detect mimetype after possible conversion
+            extra_args = {"ContentType": (getattr(file_storage, 'mimetype', None) or "image/jpeg")}
+            if current_app.config.get("S3_SET_PUBLIC_ACL", True):
+                extra_args["ACL"] = "public-read"
             s3.upload_fileobj(io.BytesIO(content), bucket, key, ExtraArgs=extra_args)
             return _s3_public_url(key)
         except Exception:
             # Fall back to local save if S3 fails
             pass
 
-    # Local filesystem fallback
-    folder = os.path.join(current_app.static_folder, subdir)
-    os.makedirs(folder, exist_ok=True)
-    save_path = os.path.join(folder, new_name)
-    with open(save_path, 'wb') as f:
-        f.write(content)
-    return f"{subdir}/{new_name}"
+    # Local filesystem fallback (best-effort; may be read-only in serverless)
+    try:
+        folder = os.path.join(current_app.static_folder, subdir)
+        os.makedirs(folder, exist_ok=True)
+        save_path = os.path.join(folder, new_name)
+        with open(save_path, 'wb') as f:
+            f.write(content)
+        return f"{subdir}/{new_name}"
+    except Exception as e:
+        try:
+            current_app.logger.error("Local media save failed: %s", e)
+        except Exception:
+            pass
+        return ""
 
 def delete_media_file(path_or_url: str) -> None:
     """Delete media from storage.

@@ -20,3 +20,7 @@ requests==2.32.3
 redis==5.0.8
 boto3==1.35.21
 
+# Images
+Pillow==10.4.0
+pillow-heif==0.17.0
+

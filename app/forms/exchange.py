@@ -20,9 +20,9 @@ class ListingForm(FlaskForm):
     # Для простоты: ввод удобств и фото через запятую (позже заменим на теги/загрузчик)
     amenities = StringField("Удобства (через запятую)", validators=[Optional(), Length(max=500)])
     photos = FileField(
-        "Фото (png/jpg/jpeg/webp)",
-        validators=[Optional(), FileAllowed(["jpg", "jpeg", "png", "webp"], "Только изображения")],
-        render_kw={"multiple": True},
+        "Фото (png/jpg/jpeg/webp, heic)",
+        validators=[Optional(), FileAllowed(["jpg", "jpeg", "png", "webp", "heic", "heif"], "Только изображения: JPG, PNG, WEBP, HEIC")],
+        render_kw={"multiple": True, "accept": "image/*"},
     )
 
 

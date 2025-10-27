@@ -11,9 +11,9 @@ class TourismOfferForm(FlaskForm):
     price_per_hour = IntegerField("Цена/час (₽)", validators=[DataRequired(), NumberRange(min=0, max=1_000_000)])
     duration_hours = IntegerField("Длительность (часов)", validators=[DataRequired(), NumberRange(min=1, max=24)])
     photos = FileField(
-        "Фото (png/jpg/jpeg/webp)",
-        validators=[Optional(), FileAllowed(["jpg", "jpeg", "png", "webp"], "Только изображения")],
-        render_kw={"multiple": True},
+        "Фото (png/jpg/jpeg/webp, heic)",
+        validators=[Optional(), FileAllowed(["jpg", "jpeg", "png", "webp", "heic", "heif"], "Только изображения: JPG, PNG, WEBP, HEIC")],
+        render_kw={"multiple": True, "accept": "image/*"},
     )
     available_from = DateField("Доступно с", validators=[Optional()])
     available_to = DateField("Доступно по", validators=[Optional()])

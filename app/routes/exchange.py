@@ -39,6 +39,8 @@ def new_listing():
                 rel = save_image(f, subdir="listing_photos")
                 if rel:
                     photos.append(rel)
+                else:
+                    flash("Некоторые файлы отклонены: неподдерживаемый формат или повреждённое изображение (HEIC конвертируется автоматически).", "warning")
         listing = HousingExchange(
             owner_id=current_user.id,
             title=form.title.data.strip(),
@@ -54,7 +56,10 @@ def new_listing():
         )
         db.session.add(listing)
         db.session.commit()
-        flash("Объявление создано", "success")
+        if not photos:
+            flash("Объявление создано без изображений.", "info")
+        else:
+            flash("Объявление создано", "success")
         return redirect(url_for("exchange.my_listings"))
     return render_template("exchange/new.html", form=form)
 

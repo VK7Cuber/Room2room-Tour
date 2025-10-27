@@ -40,6 +40,10 @@ class Config:
     S3_PUBLIC_URL = os.getenv("S3_PUBLIC_URL", "")  # e.g. https://<bucket>.storage.yandexcloud.net
     # Whether to attempt deleting objects from storage when users remove photos
     S3_DELETE_ENABLED = os.getenv("S3_DELETE_ENABLED", "true").lower() == "true"
+    # Whether to set ACL=public-read on upload (disable if bucket uses policy-only public)
+    S3_SET_PUBLIC_ACL = os.getenv("S3_SET_PUBLIC_ACL", "true").lower() == "true"
+    # Addressing style for custom endpoints: 'path' works well with Yandex/other S3-compatible services
+    S3_ADDRESSING_STYLE = os.getenv("S3_ADDRESSING_STYLE", "path")
 
     # App timezone for displaying naive UTC timestamps
     APP_TZ = os.getenv("APP_TZ", "Europe/Moscow")

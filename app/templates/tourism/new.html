@@ -31,6 +31,10 @@
             <div class="col-12">
               <label class="form-label">{{ form.photos.label }}</label>
               {{ form.photos(class_='form-control') }}
+              {% if form.photos.errors %}
+                <div class="invalid-feedback d-block">{{ form.photos.errors[0] }}</div>
+              {% endif %}
+              <div class="form-text">Поддерживаемые форматы: JPG, PNG, WEBP, HEIC. Можно выбрать несколько файлов.</div>
             </div>
             <div class="col-md-6">
               <label class="form-label">{{ form.available_from.label }}</label>

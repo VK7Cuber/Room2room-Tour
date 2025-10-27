@@ -55,6 +55,8 @@ def profile():
             rel_path = save_image(form.avatar.data, subdir="avatars")
             if rel_path:
                 current_user.avatar = rel_path
+            else:
+                flash("Не удалось загрузить изображение. Проверьте формат или повторите позже.", "warning")
         current_user.description = form.description.data.strip() if form.description.data else None
         db.session.commit()
         flash("Профиль обновлён", "success")

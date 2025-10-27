@@ -49,7 +49,10 @@
             <div class="col-12">
               <label class="form-label">{{ form.photos.label }}</label>
               {{ form.photos(class_='form-control') }}
-              <div class="form-text">Укажите ссылки на изображения через запятую</div>
+              {% if form.photos.errors %}
+                <div class="invalid-feedback d-block">{{ form.photos.errors[0] }}</div>
+              {% endif %}
+              <div class="form-text">Поддерживаемые форматы: JPG, PNG, WEBP, HEIC. Можно выбрать несколько файлов.</div>
             </div>
             <div class="col-12">
               <label class="form-label">{{ form.description.label }}</label>

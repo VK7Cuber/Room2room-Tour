@@ -41,6 +41,8 @@ def tourism_new():
                 rel = save_image(f, subdir="tour_photos")
                 if rel:
                     photos.append(rel)
+                else:
+                    flash("Некоторые файлы отклонены: неподдерживаемый формат или повреждённое изображение (HEIC конвертируется автоматически).", "warning")
         tour = RemoteTourism(
             guide_id=current_user.id,
             city=form.city.data.strip() if form.city.data else None,
@@ -54,7 +56,10 @@ def tourism_new():
         )
         db.session.add(tour)
         db.session.commit()
-        flash("Предложение добавлено", "success")
+        if not photos:
+            flash("Предложение добавлено без изображений.", "info")
+        else:
+            flash("Предложение добавлено", "success")
         return redirect(url_for("tourism.tourism_detail", tour_id=tour.id))
     return render_template("tourism/new.html", form=form)
 
