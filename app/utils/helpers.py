@@ -1,4 +1,4 @@
-import os, uuid
+import os, uuid, io
 from flask import current_app
 from werkzeug.utils import secure_filename
 from typing import Optional
@@ -72,6 +72,7 @@ def save_image(file_storage, subdir: str = "uploads") -> str:
     """Store uploaded image in object storage if configured, otherwise on local disk.
 
     Returns either a public URL (when S3 is enabled) or a relative path under static/ for url_for('static').
+    Uses an in-memory buffer to avoid issues with consumed/closed streams on fallback.
     """
     if not file_storage or not getattr(file_storage, 'filename', ''):
         return ""
@@ -82,14 +83,30 @@ def save_image(file_storage, subdir: str = "uploads") -> str:
     new_name = f"{uuid.uuid4().hex}{ext}"
     key = f"{subdir}/{new_name}"
 
+    # Read content once into memory to support both S3 and local paths reliably
+    try:
+        try:
+            file_storage.stream.seek(0)
+        except Exception:
+            pass
+        content: bytes = file_storage.read()
+    finally:
+        try:
+            # avoid leaving stream in inconsistent state
+            file_storage.close()
+        except Exception:
+            pass
+
+    if not content:
+        return ""
+
     # Try S3-compatible storage
     s3 = _get_s3_client()
     bucket = current_app.config.get("S3_BUCKET")
     if s3 and bucket:
         try:
-            file_storage.stream.seek(0)
-            extra_args = {"ContentType": file_storage.mimetype or "image/jpeg", "ACL": "public-read"}
-            s3.upload_fileobj(file_storage.stream, bucket, key, ExtraArgs=extra_args)
+            extra_args = {"ContentType": getattr(file_storage, 'mimetype', None) or "application/octet-stream", "ACL": "public-read"}
+            s3.upload_fileobj(io.BytesIO(content), bucket, key, ExtraArgs=extra_args)
             return _s3_public_url(key)
         except Exception:
             # Fall back to local save if S3 fails
@@ -99,7 +116,8 @@ def save_image(file_storage, subdir: str = "uploads") -> str:
     folder = os.path.join(current_app.static_folder, subdir)
     os.makedirs(folder, exist_ok=True)
     save_path = os.path.join(folder, new_name)
-    file_storage.save(save_path)
+    with open(save_path, 'wb') as f:
+        f.write(content)
     return f"{subdir}/{new_name}"
 
 def delete_media_file(path_or_url: str) -> None:
